@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: monospace;
+  background: linear-gradient(180deg, #1c0122,#1c0122, #4d0080); /* Indigo to blue */
+}
+
+p{
+  margin: 0px;
+}
+
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.App-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(30px + 2vmin);
+  color: white;
+}
+
+.App-p{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  padding: 10px;
+}
+
+.Select{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100vh;
+  color: white;
+  padding: 10px;
+  column-gap: 10px;
+}
