@@ -4,7 +4,6 @@ from script import generate_tiktok_report_text, create_pdf_report, course_map, S
 import os
 import uuid
 
-
 app = Flask(__name__)
 CORS(app)
 

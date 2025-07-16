@@ -45,3 +45,16 @@ p{
   padding: 10px;
   column-gap: 10px;
 }
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;      /* full viewport width */
+  height: 100vh;     /* full viewport height */
+  background-color: rgba(0, 0, 0, 0.8); /* semi-transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;    /* on top of everything */
+}

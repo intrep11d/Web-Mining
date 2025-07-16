@@ -2,6 +2,7 @@ from google import genai
 import os
 from dotenv import load_dotenv
 from fpdf import FPDF
+import uuid
 
 load_dotenv()
 
@@ -53,6 +54,7 @@ Prepared by: SWS3023_2
 - Provide a short list (3–5) of **recommended hashtags and audios** they can consider using in future posts.
 
 Keep the tone professional but engaging. The final report should be visually skimmable, clear, brief, and tailored specifically for the org's academic focus.
+**IMPORTANT: Respond with ONLY the report content. Do NOT include any introductory phrases, conversational text, dates, or objectives outside of the report itself.**
 """
 
 ORG_NAME = "University Robotics Club"
@@ -91,7 +93,7 @@ def generate_tiktok_report_text(org_name: str, major: str, csv_data: str) -> str
     except Exception as e:
         return f"Error: Failed to generate report. {e}"
 
-def create_pdf_report(report_text: str, org_name: str, major: str, output_folder="reports/", logo_path=None) -> str:
+def create_pdf_report(report_text: str, org_name: str, major: str, output_folder="reports/", logo_path="yumeilogo.png") -> str:
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
@@ -112,11 +114,12 @@ def create_pdf_report(report_text: str, org_name: str, major: str, output_folder
     pdf.set_font("Arial", 'B', 16)
     pdf.set_xy(35, 15)
     pdf.multi_cell(0, 10, f"TikTok Marketing Report for {org_name} ({major})", align='L')
-    pdf.ln(5)
+    pdf.ln(10)
     pdf.set_font("Arial", size=10)
 
     for line in report_text.split('\n'):
         line = line.strip()
+        stripped_line = line.strip()
         if line.startswith("### "):
             pdf.set_font("Arial", 'B', 12)
             pdf.multi_cell(0, 7, line.replace("### ", ""), align='L')
@@ -129,6 +132,11 @@ def create_pdf_report(report_text: str, org_name: str, major: str, output_folder
             pdf.ln(2)
         elif line.startswith("* "):
             pdf.multi_cell(0, 5, "   " + line, align='L')
+        elif '**' in stripped_line: # NEW: Check if the line contains bold markdown anywhere
+            processed_line_for_bold = stripped_line.replace('**', '') # Remove asterisks
+            pdf.set_font("Arial", 'B', 10) # Set font to bold for this line
+            pdf.multi_cell(0, 5, processed_line_for_bold, align='L')
+            pdf.set_font("Arial", '', 10) # Reset font to regular
         elif line:
             pdf.multi_cell(0, 5, line, align='L')
         else:
@@ -137,6 +145,6 @@ def create_pdf_report(report_text: str, org_name: str, major: str, output_folder
     try:
         pdf.output(filepath)
         print(f"PDF saved at {filepath}")
-        return filename  # Return just filename
+        return filename 
     except Exception as e:
         return f"Error saving PDF: {e}"

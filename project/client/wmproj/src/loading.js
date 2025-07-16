@@ -1,6 +1,5 @@
-"use client"
-
 import { motion } from "motion/react"
+import './App.css'
 
 function LoadingThreeDotsJumping() {
   const dotVariants = {
@@ -16,16 +15,21 @@ function LoadingThreeDotsJumping() {
   }
 
   return (
-    <motion.div
-      animate="jump"
-      transition={{ staggerChildren: -0.2, staggerDirection: -1 }}
-      className="container"
-    >
-      <motion.div className="dot" variants={dotVariants} />
-      <motion.div className="dot" variants={dotVariants} />
-      <motion.div className="dot" variants={dotVariants} />
+    <div className="loading-wrapper">
+      <motion.div
+        animate="jump"
+        transition={{ staggerChildren: -0.2, staggerDirection: -1 }}
+        className="container"
+      >
+        <motion.div className="dot" variants={dotVariants} />
+        <motion.div className="dot" variants={dotVariants} />
+        <motion.div className="dot" variants={dotVariants} />
+      </motion.div>
+
+      <div className="loading-text">PDF Generating...</div>
+
       <StyleSheet />
-    </motion.div>
+    </div>
   )
 }
 
@@ -36,6 +40,18 @@ function StyleSheet() {
   return (
     <style>
       {`
+        .loading-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          color: #f7f7f7;
+          font-family: monospace;
+          font-size: 1.2rem;
+          margin-top: 10px;
+        }
+
         .container {
           display: flex;
           justify-content: center;
@@ -47,8 +63,13 @@ function StyleSheet() {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background-color: #ff0088;
+          background-color: #f7f7f7ff;
           will-change: transform;
+        }
+
+        .loading-text {
+          margin-top: 10px;
+          text-align: center;
         }
       `}
     </style>

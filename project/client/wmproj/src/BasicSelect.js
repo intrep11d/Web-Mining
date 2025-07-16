@@ -7,36 +7,58 @@ import Select from '@mui/material/Select'
 import './App.css'
 import Button from '@mui/material/Button'
 import FormHelperText from '@mui/material/FormHelperText'
-import axios from 'axios'
+import axios from 'axios' 
 
-
-export default function BasicSelect() {
+export default function BasicSelect( {setLoading} ) {
   const [course, setCourse] = React.useState('');
   const [response, setResponse] = React.useState('');
-  const [error, setError] = React.useState(false); // 🆕
+  const [error, setError] = React.useState(false); 
 
   const handleChange = (event) => {
     setCourse(event.target.value);
-    setError(false); // clear error once selected
+    setError(false); 
   };
 
 const handleGenerateClick = async () => {
   if (course === '') {
-    setError(true)
-    setResponse('') // optional: clear old response
-    return
+    setError(true);
+    setResponse('');
+    return;
   }
+
+  setLoading(true);
 
   try {
     const res = await axios.post('http://localhost:5000/generate', {
       course_value: course
-    })
-    setResponse(res.data.message)
+    });
+
+    setResponse(res.data.message);
+
+    const filename = res.data.filename;
+
+    if (filename) {
+      const downloadUrl = `http://localhost:5000/download/${filename}`;
+
+      const pdfResponse = await fetch(downloadUrl);
+      const blob = await pdfResponse.blob();
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }
   } catch (err) {
-    console.error(err)
-    setResponse('Error generating content.')
+    console.error(err);
+    setResponse('Error generating content.');
+  } finally {
+    setLoading(false);
   }
-}
+};
 
   return (
     <Box sx={{ minWidth: 500 }}>

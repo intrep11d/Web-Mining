@@ -1,13 +1,24 @@
 import React from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import './App.css'
 import BasicSelect from './BasicSelect'
 import { Typewriter } from './typewriter'
 import logo from './logo.png'
+import LoadingThreeDotsJumping from './loading'
 
 function App() {
+const [loading, setLoading] = useState(false);
+
   return (
     <div className="App">
+
+      {loading && (
+        <div className="loading-overlay">
+          <LoadingThreeDotsJumping />
+        </div>
+      )}
+
       <motion.header
         className="App-header"
         initial={{ opacity: 0, y: 50 }}
@@ -40,7 +51,9 @@ function App() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 3 }} // 👈 delay BasicSelect
       >
-        <BasicSelect />
+      
+      <BasicSelect setLoading={setLoading} />
+      
       </motion.div>
     </div>
   );
