@@ -1,49 +1,62 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import './App.css';
-import Button from '@mui/material/Button';
+import * as React from 'react'
+import Box from '@mui/material/Box'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
+import Select from '@mui/material/Select'
+import './App.css'
+import Button from '@mui/material/Button'
+import FormHelperText from '@mui/material/FormHelperText'
 
 export default function BasicSelect() {
   const [course, setCourse] = React.useState('');
+  const [error, setError] = React.useState(false); // 🆕
 
   const handleChange = (event) => {
     setCourse(event.target.value);
+    setError(false); // clear error once selected
+  };
+
+  const handleGenerateClick = () => {
+    if (course === '') {
+      setError(true);
+    } else {
+      setCourse(course)
+      console.log("Generating for course:", course);
+    }
   };
 
   return (
     <Box sx={{ minWidth: 500 }}>
       <div className='Select'>
-        <FormControl fullWidth
-        sx={{
-          
-          '& .MuiInputLabel-root': {
-              color: 'white', 
-              fontFamily: 'monospace',
-          },
-          '& .MuiInputLabel-root.Mui-focused': {
+        <FormControl
+          fullWidth
+          error={error}
+          sx={{
+            '& .MuiInputLabel-root': {
               color: 'white',
-          },
-          '& .MuiSelect-select': {
-              color: 'white', 
               fontFamily: 'monospace',
-          },
-          '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#ffffff79', // default border
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: 'white',
+            },
+            '& .MuiSelect-select': {
+              color: 'white',
+              fontFamily: 'monospace',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#ffffff79',
               borderRadius: '100px',
               borderWidth: '2px',
-          },
-          '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#bcbcbc4a', // on hover
-          },
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#ffffffff', // on focus
-          },
-          
-        }}>
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#bcbcbc4a',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#ffffffff',
+            },
+          }}
+        >
           <InputLabel id="demo-simple-select-label">Course</InputLabel>
           <Select
             labelId="demo-simple-select-label"
@@ -53,13 +66,13 @@ export default function BasicSelect() {
             onChange={handleChange}
             MenuProps={{
               PaperProps: {
-                  sx: {
-                  backgroundColor: '#1c0122', // dark menu background
-                  color: 'white', // white text for menu items
+                sx: {
+                  backgroundColor: '#1c0122',
+                  color: 'white',
                   fontFamily: 'monospace',
-                  },
-            },
-          }}
+                },
+              },
+            }}
           >
             <MenuItem value={0}>💻Tech</MenuItem>
             <MenuItem value={1}>🩺Medicine</MenuItem>
@@ -72,15 +85,23 @@ export default function BasicSelect() {
             <MenuItem value={8}>🏛️Architecture</MenuItem>
             <MenuItem value={9}>💡Surprise Me!</MenuItem>
           </Select>
+          {/* 🆕 Error message shown conditionally */}
+          {error && <FormHelperText>Please select a course before generating.</FormHelperText>}
         </FormControl>
-        <Button variant="contained" className='buttone'
-              sx={{
-                backgroundColor: 'white',
-                fontFamily: 'monospace',
-                color: 'black',
-                borderRadius: '100px',
-                }}>
-            Generate</Button>
+
+        <Button
+          variant="contained"
+          className='buttone'
+          onClick={handleGenerateClick}
+          sx={{
+            backgroundColor: 'white',
+            fontFamily: 'monospace',
+            color: 'black',
+            borderRadius: '100px',
+          }}
+        >
+          Generate
+        </Button>
       </div>
     </Box>
   );
