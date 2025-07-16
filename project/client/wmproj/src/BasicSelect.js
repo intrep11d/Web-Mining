@@ -7,9 +7,12 @@ import Select from '@mui/material/Select'
 import './App.css'
 import Button from '@mui/material/Button'
 import FormHelperText from '@mui/material/FormHelperText'
+import axios from 'axios'
+
 
 export default function BasicSelect() {
   const [course, setCourse] = React.useState('');
+  const [response, setResponse] = React.useState('');
   const [error, setError] = React.useState(false); // 🆕
 
   const handleChange = (event) => {
@@ -17,14 +20,23 @@ export default function BasicSelect() {
     setError(false); // clear error once selected
   };
 
-  const handleGenerateClick = () => {
-    if (course === '') {
-      setError(true);
-    } else {
-      setCourse(course)
-      console.log("Generating for course:", course);
-    }
-  };
+const handleGenerateClick = async () => {
+  if (course === '') {
+    setError(true)
+    setResponse('') // optional: clear old response
+    return
+  }
+
+  try {
+    const res = await axios.post('http://localhost:5000/generate', {
+      course_value: course
+    })
+    setResponse(res.data.message)
+  } catch (err) {
+    console.error(err)
+    setResponse('Error generating content.')
+  }
+}
 
   return (
     <Box sx={{ minWidth: 500 }}>

@@ -13,7 +13,7 @@ You're a seasoned social media strategist who specializes in TikTok trends for s
 
 You are provided with a dataset (.csv file) containing detailed information on the top-performing TikTok videos from various student organizations across different majors. Each entry includes org name, major/department, followers, engagement metrics, video themes, hashtags used, audio used, and post times.
 
-Your task is to generate a concise, actionable, and professional **1-page marketing report** tailored for the following student organization:
+Your task is to generate a concise, actionable, and professional 1-page marketing report tailored for the following student organization:
 
 - 📌 Org Name: {org_name}
 - 🎓 Major/Department: {major}
@@ -40,6 +40,7 @@ Your report must include the following:
 - Provide a short list (3–5) of **recommended hashtags and audios** they can consider using in future posts.
 
 Keep the tone professional but engaging. The final report should be visually skimmable, clear, brief, and tailored specifically for the org's academic focus.
+**IMPORTANT: Respond with ONLY the report content. Do NOT include any introductory phrases, conversational text, dates, or objectives outside of the report itself.**
 """
 
 # --- Sample Data for Testing ---
@@ -84,7 +85,7 @@ def generate_tiktok_report_text(org_name: str, major: str, csv_data: str) -> str
 
     try:
         response = client.models.generate_content(
-            model="gemini-1.5-flash", # Using gemini-1.5-flash as requested
+            model="gemini-2.0-flash",
             contents=full_prompt
         )
         # Check if the response contains text
@@ -112,8 +113,29 @@ def create_pdf_report(report_text: str, org_name: str, major: str, filename: str
     pdf = FPDF()
     pdf.add_page()
     
-    # Set standard font for all content
-    pdf.set_font("Arial", size=12)
+    # Define font variables based on successful loading
+    main_font = 'Arial'
+    main_font_size = 12
+    heading1_size = 16
+    heading2_size = 14
+    heading3_size = 12
+    body_size = 10
+
+    try:
+        if not os.path.exists(FONT_PATH):
+            print(f"Error: Font file not found at '{FONT_PATH}'. Unicode characters (like en-dashes) may not display correctly.")
+            # Fallback to Arial if the custom font isn't found
+            pdf.set_font("Arial", size=main_font_size)
+        else:
+            # Register the new font with uni=True for Unicode support
+            pdf.add_font('DejaVuSans', '', FONT_PATH, uni=True)
+            # Set the font to use it by default
+            pdf.set_font('DejaVuSans', '', main_font_size)
+            main_font = 'DejaVuSans' # Update main_font variable
+    except Exception as e:
+        print(f"Error loading custom font: {e}. Unicode characters may not display correctly, falling back to Arial.")
+        pdf.set_font("Arial", size=main_font_size) # Fallback if font loading fails
+
 
     # Coordinates for logo and title
     logo_x = 10
@@ -134,30 +156,40 @@ def create_pdf_report(report_text: str, org_name: str, major: str, filename: str
         print(f"Warning: Logo file not found at '{logo_path}'. Skipping logo.")
 
     # TITLE BESIDE THE LOGO
-    pdf.set_font("Arial", 'B', 16) # Set font for main title
+    pdf.set_font(main_font, 'B', heading1_size) 
     pdf.set_xy(title_x_offset, title_y)
     pdf.multi_cell(0, 10, f"TikTok Marketing Report for {org_name} ({major})", align='L') # Align left
     pdf.ln(5) # Reduced space after the title
 
-    pdf.set_font("Arial", size=10) 
+    pdf.set_font(main_font, '', body_size) 
     
     lines = report_text.split('\n')
     for line in lines:
         stripped_line = line.strip()
+        
+        # Check for specific markdown patterns first
         if stripped_line.startswith('### '):
-            heading_text = stripped_line.replace('### ', '')
-            pdf.set_font("Arial", 'B', 12) # Set bold font for headings
-            pdf.multi_cell(0, 7, heading_text, align='L') # No emoji, reduced line height
-            pdf.set_font("Arial", size=10) # Reset font to regular for next lines
-            pdf.ln(1) # Reduced line break after heading
+            heading_text = stripped_line.replace('### ', '').replace('**', '') # Also remove ** from headings
+            pdf.set_font(main_font, 'B', heading3_size) 
+            pdf.multi_cell(0, 7, heading_text, align='L') 
+            pdf.set_font(main_font, '', body_size) 
+            pdf.ln(1) 
         elif stripped_line.startswith('## '):
-            pdf.set_font("Arial", 'B', 14) # Set bold font for H2 headings
-            pdf.multi_cell(0, 8, stripped_line.replace('## ', ''), align='L') # Reduced line height
-            pdf.set_font("Arial", size=10) # Reset font to regular for next lines
-            pdf.ln(2) # Reduced line break after heading
+            processed_heading = stripped_line.replace('## ', '').replace('**', '') # Also remove ** from headings
+            pdf.set_font(main_font, 'B', heading2_size) 
+            pdf.multi_cell(0, 8, processed_heading, align='L') 
+            pdf.set_font(main_font, '', body_size) 
+            pdf.ln(2) 
         elif stripped_line.startswith('* '): # For bullet points
-            pdf.multi_cell(0, 5, "   " + stripped_line, align='L') # Reduced line height, indent bullet points
-        elif stripped_line: # Only process non-empty lines that aren't headings or bullets
+            # Keep the '*' for visual bullet, but strip any inner '**'
+            processed_bullet_content = stripped_line.replace('**', '')
+            pdf.multi_cell(0, 5, "   " + processed_bullet_content, align='L') # Reduced line height, indent bullet points
+        elif '**' in stripped_line: # NEW: Check if the line contains bold markdown anywhere
+            processed_line_for_bold = stripped_line.replace('**', '') # Remove asterisks
+            pdf.set_font(main_font, 'B', body_size) # Set font to bold for this line
+            pdf.multi_cell(0, 5, processed_line_for_bold, align='L')
+            pdf.set_font(main_font, '', body_size) # Reset font to regular
+        elif stripped_line: # General text (no specific markdown or bolding)
             pdf.multi_cell(0, 5, stripped_line, align='L') # Reduced line height for regular text
         else: # Handle empty lines for spacing
             pdf.ln(2) # Reduced line break for empty lines

@@ -1,8 +1,8 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import './App.css';
-import BasicSelect from './BasicSelect';
-import { Typewriter } from './typewriter';
+import React from 'react'
+import { motion } from 'framer-motion'
+import './App.css'
+import BasicSelect from './BasicSelect'
+import { Typewriter } from './typewriter'
 import logo from './logo.png'
 
 function App() {
