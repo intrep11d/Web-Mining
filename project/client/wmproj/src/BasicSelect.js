@@ -137,6 +137,13 @@ const handleGenerateClick = async () => {
           Generate
         </Button>
       </div>
+       {response && (
+        <center>
+          <p style={{ color: 'white', fontFamily: 'monospace', marginTop: '1rem' }}>
+            {response}
+          </p>
+          </center>
+          )}
     </Box>
   );
 }

@@ -58,7 +58,7 @@ Keep the tone professional but engaging. The final report should be visually ski
 """
 
 ORG_NAME = "University Robotics Club"
-MAJOR_DEPARTMENT = "Engineering"
+MAJOR_DEPARTMENT = "Engineering" 
 SAMPLE_CSV_DATA = """
 org_name,major/department,followers,engagement_rate,video_theme,hashtags,audio_used,post_time
 Student Coders,Computer Science,15000,0.08,Coding Challenge,['#codingchallenge','#compsci'],Upbeat Synth,Tue 3 PM
