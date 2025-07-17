@@ -40,17 +40,14 @@ Prepared by: SWS3023_2
 - Identify and list **3–5 viral TikTok videos** from student organizations in the *same or similar major*.
 - Include org name, theme, engagement rate, and one notable content or trend element (e.g., popular sound, format, or style).
 
-### 2. **Visual Trend Snapshot**
-- Suggest a **bar chart or pie chart** visualizing popular video themes, top-used hashtags, or peak posting times based on the CSV dataset. Describe what this chart would show.
-
-### 3. **Strategic Content Recommendation**
+### 2. **Strategic Content Recommendation**
 - Write a **1-paragraph suggestion** on what TikTok strategy this org should adopt.
 - Base your recommendation on:
   - Common trends used by top-performing orgs in the same field
   - Current content style of this org (assumed from context or follower count)
   - Any content gaps or opportunities (e.g., not using trending sounds, not posting at optimal times)
 
-### 4. **Suggested Hashtags & Audios**
+### 3. **Suggested Hashtags & Audios**
 - Provide a short list (3–5) of **recommended hashtags and audios** they can consider using in future posts.
 
 Keep the tone professional but engaging. The final report should be visually skimmable, clear, brief, and tailored specifically for the org's academic focus.
@@ -141,10 +138,37 @@ def create_pdf_report(report_text: str, org_name: str, major: str, output_folder
             pdf.multi_cell(0, 5, line, align='L')
         else:
             pdf.ln(2)
+            
+     # --- Add Static Section: Engagement Insights ---
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 12)
+    pdf.multi_cell(0, 8, "4. Engagement Insights", align='L')
+    pdf.set_font("Arial", size=10)
+    pdf.ln(2)
+    insights = [
+        "Based on a correlation analysis of likes, shares, and comments across TikTok videos:",
+        "- Likes & Comments are strongly correlated (0.66), suggesting that engaging videos often generate conversation.",
+        "- Likes & Shares have a moderate correlation (0.45), meaning popular videos are somewhat likely to be shared.",
+        "- Shares & Comments show weak correlation (0.24), indicating viewers may share content without leaving feedback."
+    ]
+    for item in insights:
+        pdf.multi_cell(0, 5, item, align='L')
+    pdf.ln(5)
 
+    # --- Add Heatmap Image ---
+    heatmap_path = "heatmap.png"
+    if os.path.exists(heatmap_path):
+        try:
+            pdf.image(heatmap_path, x=25, y=pdf.get_y(), w=160)
+        except Exception as e:
+            print(f"Warning: Couldn't insert heatmap. {e}")
+    else:
+        print("Warning: correlation_heatmap.png not found in working directory.")
+
+    # --- Save PDF ---
     try:
         pdf.output(filepath)
         print(f"PDF saved at {filepath}")
-        return filename 
+        return filename
     except Exception as e:
         return f"Error saving PDF: {e}"
